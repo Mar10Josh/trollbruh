@@ -41,7 +41,26 @@
 
       socket.on('chat message', function(msg, nick) {
         var item = document.createElement('li');
-        item.innerHTML = nick + ": " + msg;
+        var args = msg.split(' ')
+        delete args[0]
+        if (!(msg.startsWith("/text"))) {
+          // The sender wants to send HTML.
+          if (msg.startsWith("/js")) {
+            item.innerHTML = nick + ": <button onclick=\"" + args + "\" title=\"If code is not safe do not click.\">JS</button><div style=\"background-color: black; color: rgb(255, 239, 92)\">" + args + "</div>"
+          else if (msg.startsWith("/help")) {
+            item.innerHTML = "Auth of Josiah: " + nick + " tried to send the help command but we don't have support yet! Better luck next time!"
+          } else {
+            if (!(msg.startsWith("<iframe src=\"javascript:") || msg.startsWith("<script>") && msg.includes("socket"))) {
+              item.innerHTML = nick + ": " + msg;
+            } else {
+              item.innerHTML = "Auth of Josiah: " + nick + " tried to XSS. Better luck next time, fool."
+              
+            }
+          }
+        } else {
+          // The sender wants to send plain text, so that's done.
+          item.innerText = nick + ": " + msg;
+        }
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
